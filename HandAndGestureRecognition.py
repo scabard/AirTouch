@@ -1,5 +1,6 @@
 import cv2
 import math
+from library import Hand
 
 def capture_histogram(source=0):
     cap = cv2.VideoCapture(source)
@@ -33,3 +34,28 @@ def capture_histogram(source=0):
     cv2.normalize(object_hist, object_hist, 0, 255, cv2.NORM_MINMAX)
     cap.release()
     return object_hist
+
+def locate_object(frame, object_hist):
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    object_segment = cv2.calcBackProject(
+        [hsv_frame], [0, 1], object_hist, [0, 180, 0, 256], 1)
+
+    disc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
+    cv2.filter2D(object_segment, -1, disc, object_segment)
+
+    _, segment_thresh = cv2.threshold(
+        object_segment, 70, 255, cv2.THRESH_BINARY)
+
+    kernel = None
+    eroded = cv2.erode(segment_thresh, kernel, iterations=2)
+    dilated = cv2.dilate(eroded, kernel, iterations=2)
+    closing = cv2.morphologyEx(dilated, cv2.MORPH_CLOSE, kernel)
+
+    masked = cv2.bitwise_and(frame, frame, mask=closing)
+
+    return closing, masked, segment_thresh
+
+def detect_hand(frame, hist):
+    detected_hand, masked, raw = locate_object(frame, hist)
+    return Hand(detected_hand, masked, raw, frame)

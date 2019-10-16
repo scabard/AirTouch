@@ -1,7 +1,6 @@
 import cv2
 import math
 
-
 class Hand:
 
     def __init__(self, binary, masked, raw, frame):
