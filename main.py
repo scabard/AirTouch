@@ -1,18 +1,23 @@
 import cv2
 import math
-import HandAndGestureRecognition as handDetection
+import HandAndGestureRecognition
 
-hist = handDetection.capture_histogram(source=0)
+hist = HandAndGestureRecognition.capture_histogram(source=0)
 cap = cv2.VideoCapture(0)
+com = (-1,-1)
+hcount = 0
+hdir = 0
+vcount = 0
+vdir = 0
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    handDetection.detect_face(frame, block=True)
+    HandAndGestureRecognition.detect_face(frame, block=True)
 
-	hand = handDetection.detect_hand(frame, hist)
+    hand = HandAndGestureRecognition.detect_hand(frame, hist)
 
     custom_outline = hand.draw_outline(
         min_area=10000, color=(0, 255, 255), thickness=2)
@@ -22,12 +27,46 @@ while True:
     for fingertip in hand.fingertips:
         cv2.circle(quick_outline, fingertip, 5, (0, 0, 255), -1)
 
-	com = hand.get_center_of_mass()
+    # if com is None:
+    #     print('a')
+    # else:
+    com1 = com
+    com = hand.get_center_of_mass()
+
+    # print(com)
+    # print(com1)
+    movx = 0
+    movy = 0
+    if com is not None and com1 is not None:
+        if com[0] > com1[0]:
+            if hdir != 1:
+                hcount = 0
+                hdir = 1
+            movx = 1
+        else:
+            if hdir != 2:
+                hcount = 0
+                hdir = 2
+            movx=2
+        if com[1] > com1[1]:
+            if vdir != 1:
+                vcount = 0
+                vdir = 1
+            movy = 1
+        else:
+            if vdir != 2:
+                vcount = 0
+                vdir = 2
+            movy=2
+    hcount = hcount + 1
+    vcount = vcount + 1
+    # if com is None:
+    #     continue
 
     if com:
         cv2.circle(quick_outline, com, 10, (255, 0, 0), -1)
 
-	cv2.imshow("handDetection", quick_outline)
+    cv2.imshow("Hand Outline", quick_outline)
 
     contours,hierarchy= cv2.findContours(hand.binary,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     cnt = max(contours, key = lambda x: cv2.contourArea(x))
@@ -75,6 +114,39 @@ while True:
 
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(binary,str(l),(0,50), font, 2, (255,255,255), 3, cv2.LINE_AA)
+
+    # if movx == 1:
+    #     cv2.putText(binary,'Left',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+    # if movx == 2:
+    #     cv2.putText(binary,'Right',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+    # if movy == 1:
+    #     cv2.putText(binary,'Down',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+    # if movy == 2:
+    #     cv2.putText(binary,'Up',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+
+    # print('h',hcount)
+    # print('v',vcount)
+
+    if hcount > 5:
+        if movx == 1:
+            cv2.putText(binary,'Left',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(l,'Left')
+        if movx == 2:
+            cv2.putText(binary,'Right',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(l,'Right')
+        hcount = 0
+    if vcount > 5:
+        if movy == 1:
+            cv2.putText(binary,'Down',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(l,'Down')
+        if movy == 2:
+            cv2.putText(binary,'Up',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(l,'Up')
+        vcount = 0
+
+    # cv2.imshow("Hand Detection", hand.masked)
+
+    # cv2.imshow("New", hand.binary)
 
     cv2.imshow("New", binary)
 
