@@ -10,7 +10,9 @@ while True:
     if not ret:
         break
 
-	hand = handy.detect_hand(frame, hist)
+    handDetection.detect_face(frame, block=True)
+
+	hand = handDetection.detect_hand(frame, hist)
 
     custom_outline = hand.draw_outline(
         min_area=10000, color=(0, 255, 255), thickness=2)
@@ -25,7 +27,7 @@ while True:
     if com:
         cv2.circle(quick_outline, com, 10, (255, 0, 0), -1)
 
-	cv2.imshow("Handy", quick_outline)
+	cv2.imshow("handDetection", quick_outline)
 
     contours,hierarchy= cv2.findContours(hand.binary,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     cnt = max(contours, key = lambda x: cv2.contourArea(x))

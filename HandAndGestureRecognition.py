@@ -2,6 +2,22 @@ import cv2
 import math
 from library import Hand
 
+
+def detect_face(frame, block=False, colour=(0, 0, 0)):
+    fill = [1, -1][block]
+    face_cascade = cv2.CascadeClassifier(
+        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.1, 5)
+    area = 0
+    X = Y = W = H = 0
+    for (x, y, w, h) in faces:
+        if w * h > area:
+            area = w * h
+            X, Y, W, H = x, y, w, h
+    cv2.rectangle(frame, (X - int(0.2*W), Y - int(0.1*H)), (X + W +int(0.2*W), Y + H*2), colour, fill)
+
 def capture_histogram(source=0):
     cap = cv2.VideoCapture(source)
     while True:
