@@ -75,3 +75,112 @@ def locate_object(frame, object_hist):
 def detect_hand(frame, hist):
     detected_hand, masked, raw = locate_object(frame, hist)
     return Hand(detected_hand, masked, raw, frame)
+
+def count_fingers(binary):
+    contours,hierarchy= cv2.findContours(binary,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    cnt = max(contours, key = lambda x: cv2.contourArea(x))
+
+    epsilon = 0.0005*cv2.arcLength(cnt,True)
+    approx= cv2.approxPolyDP(cnt,epsilon,True)
+
+    hull = cv2.convexHull(cnt)
+
+    areahull = cv2.contourArea(hull)
+    areacnt = cv2.contourArea(cnt)
+
+    arearatio=((areahull-areacnt)/areacnt)*100
+
+    hull = cv2.convexHull(approx, returnPoints=False)
+    defects = cv2.convexityDefects(approx, hull)
+
+    n_fing=0
+
+    for i in range(defects.shape[0]):
+        s,e,f,d = defects[i,0]
+        start = tuple(approx[s][0])
+        end = tuple(approx[e][0])
+        far = tuple(approx[f][0])
+        pt= (100,180)
+
+
+        a = math.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
+        b = math.sqrt((far[0] - start[0])**2 + (far[1] - start[1])**2)
+        c = math.sqrt((end[0] - far[0])**2 + (end[1] - far[1])**2)
+        s = (a+b+c)/2
+        ar = math.sqrt(s*(s-a)*(s-b)*(s-c))
+
+        d=(2*ar)/a
+
+        angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
+
+        if angle <= 90 and d>30:
+            n_fing += 1
+            cv2.circle(binary, far, 3, [255,0,0], -1)
+
+    n_fing+=1
+    # print(n_fing)
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.putText(binary,str(n_fing),(0,50), font, 2, (255,255,255), 3, cv2.LINE_AA)
+
+    return binary, n_fing
+
+def find_dir(binary,n_fing,hcount,vcount,hdir,vdir,com,comprev):
+    movx = 0
+    movy = 0
+    hrecog = 0
+    vrecog = 0
+    if com is not None and comprev is not None:
+        if com[0] > comprev[0]:
+            if hdir != 1:
+                hcount = 0
+                hdir = 1
+            movx = 1
+        else:
+            if hdir != 2:
+                hcount = 0
+                hdir = 2
+            movx=2
+        if com[1] > comprev[1]:
+            if vdir != 1:
+                vcount = 0
+                vdir = 1
+            movy = 1
+        else:
+            if vdir != 2:
+                vcount = 0
+                vdir = 2
+            movy=2
+    hcount = hcount + 1
+    vcount = vcount + 1
+    # if movx == 1:
+    #     cv2.putText(binary,'Left',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+    # if movx == 2:
+    #     cv2.putText(binary,'Right',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+    # if movy == 1:
+    #     cv2.putText(binary,'Down',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+    # if movy == 2:
+    #     cv2.putText(binary,'Up',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+
+    # print('h',hcount)
+    # print('v',vcount)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    if hcount > 5:
+        hrecog = movx
+        if movx == 1:
+            cv2.putText(binary,'Left',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(n_fing,'Left')
+        if movx == 2:
+            cv2.putText(binary,'Right',(0,100), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(n_fing,'Right')
+        hcount = 0
+    if vcount > 5:
+        vrecog = movy
+        if movy == 1:
+            cv2.putText(binary,'Down',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(n_fing,'Down')
+        if movy == 2:
+            cv2.putText(binary,'Up',(0,150), font, 2, (255,255,255), 3, cv2.LINE_AA)
+            print(n_fing,'Up')
+        vcount = 0
+    return binary, hrecog, vrecog, hcount, vcount, hdir, vdir
