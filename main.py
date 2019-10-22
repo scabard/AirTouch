@@ -1,6 +1,8 @@
 import cv2
 import math
+import pyautogui
 from GestureRecog import HandAndGestureRecognition
+import altEventMapping as eventMap
 
 hist = HandAndGestureRecognition.capture_histogram(source=0)
 cap = cv2.VideoCapture(0)
@@ -10,6 +12,7 @@ hcount = 0
 hdir = 0
 vcount = 0
 vdir = 0
+count = 0
 
 while True:
     ret, frame = cap.read()
@@ -49,6 +52,32 @@ while True:
     # cv2.imshow("New", hand.binary)
 
     cv2.imshow("New", binary)
+
+    actWin = eventMap.retActiveWin()
+
+    if (actWin == 'vlc'):
+        if (n_fing == 3 and hrecog == 0 and vrecog == 0 and count == 0):
+            pyautogui.press('space')
+            count = 20
+        if (n_fing == 2 and hrecog == 2 and count == 0 ):
+            # pyautogui.keyDown('shift')
+            pyautogui.press('right')
+            # pyautogui.keyUp('shift')
+            count = 5
+        if (n_fing == 2 and hrecog == 1 and count == 0 ):
+            # pyautogui.keyDown('shift')
+            pyautogui.press('left')
+            # pyautogui.keyUp('shift')
+            count = 5
+        if (n_fing == 1 and vrecog == 1 and count == 0 ):
+            pyautogui.press('down')
+            count = 5
+        if (n_fing == 1 and vrecog == 2 and count == 0 ):
+            pyautogui.press('up')
+            count = 5
+
+    if ( count != 0):
+        count = count - 1
 
     k = cv2.waitKey(5)
 
