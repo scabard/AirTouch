@@ -1,6 +1,6 @@
 import cv2
 import math
-import HandAndGestureRecognition
+from GestureRecog import HandAndGestureRecognition
 
 hist = HandAndGestureRecognition.capture_histogram(source=0)
 cap = cv2.VideoCapture(0)

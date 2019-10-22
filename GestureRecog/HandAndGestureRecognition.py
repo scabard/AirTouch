@@ -1,7 +1,6 @@
 import cv2
 import math
-from library import Hand
-
+from GestureRecog.library import Hand
 
 def detect_face(frame, block=False, colour=(0, 0, 0)):
     fill = [1, -1][block]
