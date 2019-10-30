@@ -72,10 +72,10 @@ while True:
     if (config.has_section(actWin) and count == 0):
         if (n_fing == 4 and hrecog == 0 and vrecog == 0 and config[actWin]['gesture1'] != 'None'):
             createEvent(config[actWin]['gesture1'])
-            count = 5
+            count = 20
         if (n_fing == 3 and hrecog == 0 and vrecog == 0 and config[actWin]['gesture2'] != 'None'):
             createEvent(config[actWin]['gesture2'])
-            count = 5
+            count = 20
         if (n_fing == 2 and hrecog == 2 and config[actWin]['gesture3'] != 'None'):
             createEvent(config[actWin]['gesture3'])
             count = 5

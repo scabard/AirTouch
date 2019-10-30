@@ -6,7 +6,6 @@ def addFile(app, name):
     if (config.has_section(app)==False):
         config.add_section(app)
     config.set(app, 'name', name)
-    config.set(app, 'xlibname', app)
     config.set(app, 'file', app+'.ini')
 
     
@@ -20,7 +19,6 @@ def getAppList():
     for section in config.sections():
         list.append([])
         list[i].append(config[section]['name'])
-        list[i].append(config[section]['xlibname'])
         i=i+1
     return list
 

@@ -11,6 +11,9 @@ from subprocess import Popen
 import configParsing as conv
 from settingsjson import settings_json
 from settingsjson import new_json
+from settingsjson import add_json1,add_json2
+from kivy.config import ConfigParser
+
 
 Builder.load_string('''
 <Interface>:
@@ -35,49 +38,48 @@ class AirTouch(App):
     def build_config(self, config):
         config.setdefaults('example', {
             'boolexample': False,
-            'numericexample': 10,
-            'optionsexample1': 'None',
-            'optionsexample2': 'Play/Pause',
-            'optionsexample3': 'Seek',
-            'optionsexample4': 'Volume Up/Down',
-            'stringexample': 'some_string',
-            'pathexample': '/some/path'})
-        config.setdefaults('add',{
+            })
+        config.setdefaults('add', {
+            'app': 'None',
+            'name': 'None'
+        })    
+        config.setdefaults('vlc',{
             'app': 'None',
             'name': 'None',
             'gesture1': 'None',
             'gesture2': 'None',
             'gesture3': 'None',
-            'gesture4': 'None'
-        })      
+            'gesture4': 'None',
+            'gesture5': 'None',
+            'gesture6': 'None'})
+        config.setdefaults('google-chrome',{
+            'app': 'None',
+            'name': 'None',
+            'gesture1': 'None',
+            'gesture2': 'None',
+            'gesture3': 'None',
+            'gesture4': 'None',
+            'gesture5': 'None',
+            'gesture6': 'None'})    
+            
+            
+             
 
     def build_settings(self, settings):
         settings.add_json_panel('AirTouch',self.config,data=settings_json)
-        st = conv.getAppList()
-        i = 0
-        while i < len(st):
-            settings.add_json_panel(st[i][0],self.config,data=new_json)
-            i = i+1
+        settings.add_json_panel('Vlc Media Player',self.config,data=add_json1)
+        settings.add_json_panel('Google Chrome',self.config,data=add_json2)
         settings.add_json_panel('Add Application',self.config,data=new_json)
 
     
     def on_config_change(self, config, section,key, value):
-        global string1
         if key == 'boolexample' and value == '1':
             print('Working Fine\n')
-            Popen(['python main.py'], shell=True)
+            Popen(['python3 main.py'], shell=True)
         if key == 'boolexample' and value == '0':
             print('Working fine\n')
             Popen(['pkill -9 -f main.py'], shell=True)
-        if section == 'add':
-            if key == 'name':
-                string1 = value
-                print(string1)
-                print("hurrah")
-            if key == 'app':
-                conv.addFile(value,string1)
-                print(value+" "+string1+"gogo")
-                string1 = ''        
+               
             
 
 
