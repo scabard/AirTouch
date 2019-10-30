@@ -3,6 +3,18 @@ import math
 import pyautogui
 from GestureRecog import HandAndGestureRecognition
 import altEventMapping as eventMap
+import configparser
+config = configparser.ConfigParser()
+
+def createEvent(genEvent):
+    event = genEvent.split('+')
+    for i in range(0,len(event)-1):
+        pyautogui.keyDown(event[i])
+    pyautogui.press(event[len(event)-1])
+    for i in range(0,len(event)-1):
+        pyautogui.keyUp(event[i])
+
+createEvent('shift+r')
 
 hist = HandAndGestureRecognition.capture_histogram(source=0)
 cap = cv2.VideoCapture(0)
@@ -13,6 +25,8 @@ hdir = 0
 vcount = 0
 vdir = 0
 count = 0
+
+config.read('airtouch.ini')
 
 while True:
     ret, frame = cap.read()
@@ -55,26 +69,45 @@ while True:
 
     actWin = eventMap.retActiveWin()
 
-    if (actWin == 'vlc'):
-        if (n_fing == 3 and hrecog == 0 and vrecog == 0 and count == 0):
-            pyautogui.press('space')
-            count = 20
-        if (n_fing == 2 and hrecog == 2 and count == 0 ):
-            # pyautogui.keyDown('shift')
-            pyautogui.press('right')
-            # pyautogui.keyUp('shift')
+    if (config.has_section(actWin) and count == 0):
+        if (n_fing == 4 and hrecog == 0 and vrecog == 0 and config[actWin]['gesture1'] != 'None'):
+            createEvent(config[actWin]['gesture1'])
             count = 5
-        if (n_fing == 2 and hrecog == 1 and count == 0 ):
-            # pyautogui.keyDown('shift')
-            pyautogui.press('left')
-            # pyautogui.keyUp('shift')
+        if (n_fing == 3 and hrecog == 0 and vrecog == 0 and config[actWin]['gesture2'] != 'None'):
+            createEvent(config[actWin]['gesture2'])
             count = 5
-        if (n_fing == 1 and vrecog == 1 and count == 0 ):
-            pyautogui.press('down')
+        if (n_fing == 2 and hrecog == 2 and config[actWin]['gesture3'] != 'None'):
+            createEvent(config[actWin]['gesture3'])
             count = 5
-        if (n_fing == 1 and vrecog == 2 and count == 0 ):
-            pyautogui.press('up')
+        if (n_fing == 2 and vrecog == 1 and config[actWin]['gesture4'] != 'None'):
+            createEvent(config[actWin]['gesture4'])
             count = 5
+        if (n_fing == 1 and vrecog == 2 and config[actWin]['gesture5'] != 'None'):
+            createEvent(config[actWin]['gesture5'])
+            count = 5
+        if (n_fing == 1 and vrecog == 1 and config[actWin]['gesture6'] != 'None'):
+            createEvent(config[actWin]['gesture6'])
+            count = 5
+    # if (actWin == 'vlc'):
+    #     if (n_fing == 3 and hrecog == 0 and vrecog == 0 and count == 0):
+    #         pyautogui.press('space')
+    #         count = 20
+    #     if (n_fing == 2 and hrecog == 2 and count == 0 ):
+    #         # pyautogui.keyDown('shift')
+    #         pyautogui.press('right')
+    #         # pyautogui.keyUp('shift')
+    #         count = 5
+    #     if (n_fing == 2 and hrecog == 1 and count == 0 ):
+    #         # pyautogui.keyDown('shift')
+    #         pyautogui.press('left')
+    #         # pyautogui.keyUp('shift')
+    #         count = 5
+    #     if (n_fing == 1 and vrecog == 1 and count == 0 ):
+    #         pyautogui.press('down')
+    #         count = 5
+    #     if (n_fing == 1 and vrecog == 2 and count == 0 ):
+    #         pyautogui.press('up')
+    #         count = 5
 
     if ( count != 0):
         count = count - 1
