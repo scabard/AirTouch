@@ -14,7 +14,7 @@ def createEvent(genEvent):
     for i in range(0,len(event)-1):
         pyautogui.keyUp(event[i])
 
-createEvent('shift+r')
+# createEvent('shift+r')
 
 hist = HandAndGestureRecognition.capture_histogram(source=0)
 cap = cv2.VideoCapture(0)
@@ -58,8 +58,9 @@ while True:
 
     binary = hand.binary
 
-    binary, n_fing = HandAndGestureRecognition.count_fingers(binary)
-    binary, hrecog, vrecog, hcount, vcount, hdir, vdir = HandAndGestureRecognition.find_dir(binary,n_fing,hcount,vcount,hdir,vdir,com,comprev)
+    if com is not None:
+        binary, n_fing = HandAndGestureRecognition.count_fingers(binary)
+        binary, hrecog, vrecog, hcount, vcount, hdir, vdir = HandAndGestureRecognition.find_dir(binary,n_fing,hcount,vcount,hdir,vdir,com,comprev)
     
     # cv2.imshow("Hand Detection", hand.masked)
 
@@ -69,25 +70,97 @@ while True:
 
     actWin = eventMap.retActiveWin()
 
-    if (config.has_section(actWin) and count == 0):
-        if (n_fing == 4 and hrecog == 0 and vrecog == 0 and config[actWin]['gesture1'] != 'None'):
-            createEvent(config[actWin]['gesture1'])
+    if (config.has_section(actWin+'gestures') and count == 0):
+        if (n_fing ==1 and hrecog == 0 and vrecog == 0 and config[actWin+'gestures']['hold1'] != 'None'):
+            createEvent(config[actWin+'gestures']['hold1'])
             count = 20
-        if (n_fing == 3 and hrecog == 0 and vrecog == 0 and config[actWin]['gesture2'] != 'None'):
-            createEvent(config[actWin]['gesture2'])
+        if (n_fing == 1 and vrecog == 2 and config[actWin+'gestures']['up1'] != 'None'):
+            createEvent(config[actWin+'gestures']['up1'])
+            count = 5
+        if (n_fing == 1 and vrecog == 1 and config[actWin+'gestures']['down1'] != 'None'):
+            createEvent(config[actWin+'gestures']['down1'])
+            count = 5
+        if (n_fing == 1 and hrecog == 2 and config[actWin+'gestures']['right1'] != 'None'):
+            createEvent(config[actWin+'gestures']['right1'])
+            count = 5
+        if (n_fing == 1 and hrecog == 1 and config[actWin+'gestures']['left1'] != 'None'):
+            createEvent(config[actWin+'gestures']['left1'])
+            count = 5
+        if (n_fing ==2 and hrecog == 0 and vrecog == 0 and config[actWin+'gestures']['hold2'] != 'None'):
+            createEvent(config[actWin+'gestures']['hold2'])
             count = 20
-        if (n_fing == 2 and hrecog == 2 and config[actWin]['gesture3'] != 'None'):
-            createEvent(config[actWin]['gesture3'])
+        if (n_fing == 2 and vrecog == 2 and config[actWin+'gestures']['up2'] != 'None'):
+            createEvent(config[actWin+'gestures']['up2'])
             count = 5
-        if (n_fing == 2 and vrecog == 1 and config[actWin]['gesture4'] != 'None'):
-            createEvent(config[actWin]['gesture4'])
+        if (n_fing == 2 and vrecog == 1 and config[actWin+'gestures']['down2'] != 'None'):
+            createEvent(config[actWin+'gestures']['down2'])
             count = 5
-        if (n_fing == 1 and vrecog == 2 and config[actWin]['gesture5'] != 'None'):
-            createEvent(config[actWin]['gesture5'])
+        if (n_fing == 2 and hrecog == 2 and config[actWin+'gestures']['right2'] != 'None'):
+            createEvent(config[actWin+'gestures']['right2'])
             count = 5
-        if (n_fing == 1 and vrecog == 1 and config[actWin]['gesture6'] != 'None'):
-            createEvent(config[actWin]['gesture6'])
+        if (n_fing == 2 and hrecog == 1 and config[actWin+'gestures']['left2'] != 'None'):
+            createEvent(config[actWin+'gestures']['left2'])
             count = 5
+        if (n_fing ==3 and hrecog == 0 and vrecog == 0 and config[actWin+'gestures']['hold3'] != 'None'):
+            createEvent(config[actWin+'gestures']['hold3'])
+            count = 20
+        if (n_fing == 3 and vrecog == 2 and config[actWin+'gestures']['up3'] != 'None'):
+            createEvent(config[actWin+'gestures']['up3'])
+            count = 5
+        if (n_fing == 3 and vrecog == 1 and config[actWin+'gestures']['down3'] != 'None'):
+            createEvent(config[actWin+'gestures']['down3'])
+            count = 5
+        if (n_fing == 3 and hrecog == 2 and config[actWin+'gestures']['right3'] != 'None'):
+            createEvent(config[actWin+'gestures']['right3'])
+            count = 5
+        if (n_fing == 3 and hrecog == 1 and config[actWin+'gestures']['left3'] != 'None'):
+            createEvent(config[actWin+'gestures']['left3'])
+            count = 5
+        if (n_fing ==4 and hrecog == 0 and vrecog == 0 and config[actWin+'gestures']['hold4'] != 'None'):
+            createEvent(config[actWin+'gestures']['hold4'])
+            count = 20
+        if (n_fing == 4 and vrecog == 2 and config[actWin+'gestures']['up4'] != 'None'):
+            createEvent(config[actWin+'gestures']['up4'])
+            count = 5
+        if (n_fing == 4 and vrecog == 1 and config[actWin+'gestures']['down4'] != 'None'):
+            createEvent(config[actWin+'gestures']['down4'])
+            count = 5
+        if (n_fing == 4 and hrecog == 2 and config[actWin+'gestures']['right4'] != 'None'):
+            createEvent(config[actWin+'gestures']['right4'])
+            count = 5
+        if (n_fing == 4 and hrecog == 1 and config[actWin+'gestures']['left4'] != 'None'):
+            createEvent(config[actWin+'gestures']['left4'])
+            count = 5
+        if (n_fing ==5 and hrecog == 0 and vrecog == 0 and config[actWin+'gestures']['hold5'] != 'None'):
+            createEvent(config[actWin+'gestures']['hold5'])
+            count = 20
+        if (n_fing == 5 and vrecog == 2 and config[actWin+'gestures']['up5'] != 'None'):
+            createEvent(config[actWin+'gestures']['up5'])
+            count = 5
+        if (n_fing == 5 and vrecog == 1 and config[actWin+'gestures']['down5'] != 'None'):
+            createEvent(config[actWin+'gestures']['down5'])
+            count = 5
+        if (n_fing == 5 and hrecog == 2 and config[actWin+'gestures']['right5'] != 'None'):
+            createEvent(config[actWin+'gestures']['right5'])
+            count = 5
+        if (n_fing == 5 and hrecog == 1 and config[actWin+'gestures']['left5'] != 'None'):
+            createEvent(config[actWin+'gestures']['left5'])
+            count = 5
+        # if (n_fing == 3 and hrecog == 0 and vrecog == 0 and config[actWin]['gesture2'] != 'None'):
+        #     createEvent(config[actWin]['gesture2'])
+        #     count = 20
+        # if (n_fing == 2 and hrecog == 2 and config[actWin]['gesture3'] != 'None'):
+        #     createEvent(config[actWin]['gesture3'])
+        #     count = 5
+        # if (n_fing == 2 and vrecog == 1 and config[actWin]['gesture4'] != 'None'):
+        #     createEvent(config[actWin]['gesture4'])
+        #     count = 5
+        # if (n_fing == 1 and vrecog == 2 and config[actWin]['gesture5'] != 'None'):
+        #     createEvent(config[actWin]['gesture5'])
+        #     count = 5
+        # if (n_fing == 1 and vrecog == 1 and config[actWin]['gesture6'] != 'None'):
+        #     createEvent(config[actWin]['gesture6'])
+        #     count = 5
     # if (actWin == 'vlc'):
     #     if (n_fing == 3 and hrecog == 0 and vrecog == 0 and count == 0):
     #         pyautogui.press('space')
